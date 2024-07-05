@@ -10,7 +10,7 @@ from model_api.src.ml_api import aggregated_models
 LOG_DIR = 'logs'
 LOG_FILE = f"{LOG_DIR}/app-{datetime.today().strftime('%Y-%m-%d')}.log"
 
-broke_name = "192.168.101.210"
+broke_name = "100.95.25.52"
 n_round = 0
 
 # Create log directory if it doesn't exist
@@ -78,7 +78,7 @@ def handle_ping_res(this_client_id, msg):
             count_eva_conn_ok = sum(1 for client_info in client_dict.values() if client_info["state"] == "eva_conn_ok")
             if count_eva_conn_ok == NUM_DEVICE:
                 print_log("publish to " + "dynamicFL/model/all_client")
-                send_model("saved_model/LSTMModel.pt", server, this_client_id)
+                send_model("saved_model/MNISTModel.pt", server, this_client_id)
 
 
 def handle_train_res(this_client_id, msg):
@@ -159,8 +159,8 @@ def on_subscribe(mosq, obj, mid, granted_qos):
 
 
 if __name__ == "__main__":
-    NUM_ROUND = 3
-    NUM_DEVICE = 2
+    NUM_ROUND = 50
+    NUM_DEVICE = 10
     global global_model
     client_dict = {}
     client_trainres_dict = {}

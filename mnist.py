@@ -21,9 +21,9 @@ from collections import OrderedDict
 from tqdm import tqdm 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-learning_rate = 0.0001
+learning_rate = 0.001
 epochs = 1
-NUM_DEVICE = 2
+NUM_DEVICE = 10
 n_list = [40] * NUM_DEVICE    # Số lượng mẫu mỗi người dùng
 k_list = [40] * NUM_DEVICE  # Số lượng mẫu mỗi lớp cho mỗi người dùng
 classes_list = [np.random.choice(range(10), size=10, replace=False) for _ in range(NUM_DEVICE)]  # Danh sách các lớp mỗi người dùng
@@ -123,7 +123,7 @@ class Lenet(nn.Module):
 def tensor_to_list(tensor):
     return tensor.detach().cpu().tolist()
 
-def train_mnist_noniid(epochs, user_data_loaders, test_loader, learning_rate=0.0001):
+def train_mnist_noniid(epochs, user_data_loaders, test_loader, learning_rate=0.001):
     model = Lenet().to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.CrossEntropyLoss()
@@ -167,7 +167,7 @@ def train_mnist_noniid(epochs, user_data_loaders, test_loader, learning_rate=0.0
         'loss': test_loss,
         'accuracy': accuracy,
         'prototypes': prototypes
-    }, "saved_model/LSTMModel.pt")
+    }, "saved_model/MNISTModel.pt")
     # Normalize prototypes 
     for label in prototypes:
         protos, count = prototypes[label]
@@ -203,7 +203,7 @@ def start_training_task_noniid():
     train_loader, test_loader, prototype_loader, train_dataset = get_mnist()
     dict_users = mnist_noniid_lt(train_dataset, NUM_DEVICE)
     user_data_loaders = get_data_loaders(train_dataset, dict_users)
-    model, prototypes = train_mnist_noniid(epochs=epochs, user_data_loaders=user_data_loaders, test_loader=test_loader, learning_rate=0.0001)
+    model, prototypes = train_mnist_noniid(epochs=epochs, user_data_loaders=user_data_loaders, test_loader=test_loader, learning_rate=0.001)
     #print(f"Model: {model}")
     #print(f"Prototypes: {prototypes}")
     #plot_prototypes(prototypes)
