@@ -43,7 +43,7 @@ model = Lenet().to(device)
 
 def do_evaluate_round():
     learning_rate = 0.001
-    rounds = 50  # Số vòng lặp đánh giá mô hình
+    rounds = 10  # Số vòng lặp đánh giá mô hình
     #print(f"\nEvaluate Round {round_idx+1}:\n")
     #model_path = f"./model_round_{rounds}.pt"
     #model_path = "saved_model/MNISTModel.pt"
@@ -73,7 +73,7 @@ def do_evaluate_round():
     return round_dict
 
 if __name__ == "__main__":
-    NUM_ROUNDS = 50
+    NUM_ROUNDS = 10
     ROUND_DICT = do_evaluate_round()
 
     # Extract accuracy and avg_loss values from round_dict
