@@ -375,7 +375,7 @@ def aggregated_models(client_trainres_dict, n_round):
     num_models = len(client_trainres_dict)
     avg_state_dict = OrderedDict((key, value / num_models) for key, value in sum_state_dict.items())
     torch.save(avg_state_dict, f'model_round_{n_round}.pt')
-    torch.save(avg_state_dict, "saved_model/LSTMModel.pt")
+    torch.save(avg_state_dict, "saved_model/MNISTModel.pt")
     # delete parameter in client_trainres to start new round
     client_trainres_dict.clear()
 
