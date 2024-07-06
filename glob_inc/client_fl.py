@@ -4,8 +4,8 @@ import paho.mqtt.subscribe as subscribe
 import json
 #from model_api.src.ml_api import start_training_task
 from mnist import start_training_task_noniid
-broker_name = "100.95.25.52"
-
+#broker_name = "100.95.25.52"
+broker_name = "192.168.101.210"
 # global start_line
 start_line = 0
 start_benign = 0

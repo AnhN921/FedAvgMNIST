@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 NUM_DEVICE = 10
+
 def evaluate_model(model, test_loader, criterion):
     model.eval()
     test_loss = 0
@@ -37,42 +38,37 @@ def evaluate_model(model, test_loader, criterion):
     accuracy = 100. * correct / len(test_loader.dataset)
     return test_loss, accuracy
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = Lenet().to(device)
+
 def do_evaluate_round():
     learning_rate = 0.001
     rounds = 50  # Số vòng lặp đánh giá mô hình
-    model_path = "saved_model/MNISTModel.pt"
+    #print(f"\nEvaluate Round {round_idx+1}:\n")
+    #model_path = f"./model_round_{rounds}.pt"
+    #model_path = "saved_model/MNISTModel.pt"
     round_dict = {}
 
-    train_loader, test_loader, _, train_dataset = get_mnist()
-    dict_users = mnist_noniid_lt(train_dataset, NUM_DEVICE)
-    user_data_loaders = get_data_loaders(train_dataset, dict_users)
+    train_loader, test_loader, _, _ = get_mnist()
+    #dict_users = mnist_noniid_lt(train_dataset, NUM_DEVICE)
     
     model = Lenet().to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.CrossEntropyLoss()
 
-    # Tải mô hình đã lưu
-    checkpoint = torch.load(model_path)
-    model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-
     for rnd in range(1, rounds + 1):
+        print(f"\nEvaluate Round {rnd}:\n")
+        #model_path = f"./model_round_{rounds}.pt"
+        model_path = f"./model_round_{rnd}.pt"
+        model.load_state_dict(torch.load(model_path, map_location=device))
+
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+        criterion = torch.nn.CrossEntropyLoss()
         # Đánh giá mô hình sau mỗi vòng
         test_loss, accuracy = evaluate_model(model, test_loader, criterion)
         logger.info(f'Round: {rnd}, Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.3f}%')
 
         round_dict[f"round_{rnd}"] = {"eval_loss": test_loss, "accuracy": accuracy}
-
-        # Training logic ở đây (nếu cần thiết) cho mỗi vòng
-        model.train()
-        for user_loader in user_data_loaders:
-            for batch_idx, (data, target) in enumerate(user_loader):
-                data, target = data.to(device), target.to(device)
-                output, protos = model(data)
-                loss = criterion(output, target)
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
 
     return round_dict
 
